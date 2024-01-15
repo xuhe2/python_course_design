@@ -3,6 +3,7 @@ import os
 import datetime
 
 def format_result(result):
+    # 格式化结果，确保每一行都以逗号和换行符结尾
     formatted_result = ""
     for line in result.split(", "):
         formatted_result += line.strip() + ",\n"
@@ -31,10 +32,12 @@ def process_firmware_file(input_file_path, output_file_path):
             output_file.write(f"文件大小: {file_size} 字节\n")
             output_file.write(f"最后修改时间: {last_modified_time}\n\n")
 
+            # 统计擦除次数的变量
+            erase_count = 0
+
             for module in binwalk.scan(input_file_path, signature=True, quiet=True):
 
                 # binwalk.scan 返回每个已执行模块的模块对象；
-                # 在本例中，应该只有一个，即签名模块。
                 output_file.write("%s 结果:\n" % module.name)
 
                 # 初始化上一个结果的文件路径为 None
@@ -56,15 +59,24 @@ def process_firmware_file(input_file_path, output_file_path):
                     formatted_result = format_result(result.description)
                     output_file.write("0x%.8X    %s\n" % (result.offset, formatted_result))
 
+                    # 检查描述信息中是否包含擦除计数相关的内容
+                    if "UBI erase count" in result.description:
+                        erase_count += 1
+
+            # 输出擦除次数统计结果
+            output_file.write(f"\n总擦除次数: {erase_count}\n")
+
         print(f"结果已写入 {output_file_path}")
 
     except FileNotFoundError as file_not_found_error:
+        # 如果文件未找到，捕获 FileNotFoundError 异常并输出相应的错误信息
         print(f"文件未找到错误: {file_not_found_error}")
 
     except Exception as e:
+        # 捕获其他异常，并输出相应的错误信息
         print(f"发生错误: {str(e)}")
 
-# 例子
+# 自定义信息
 firmware_input_path = 'C:/Users/27719/Downloads/python_course_design-master/python_course_design-master/openwrt-11.19.2023-ramips-mt7621-linksys_e5600-squashfs-factory.bin'
 output_result_path = 'output.txt'
 process_firmware_file(firmware_input_path, output_result_path)
