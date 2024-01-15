@@ -1,4 +1,4 @@
-from pysquashfsimage import SquashFsImage
+from PySquashfsImage import SquashFsImage
 
 # 打开ROM文件
 rom_file = "your_rom_file_path"

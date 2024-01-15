@@ -6,7 +6,7 @@ root = tk.Tk()
 root.title("分析结果")
 
 # 从文本文件中读取分析结果
-file_path = 'C:/Users/admin/Downloads/python_course_design-master/python_course_design-master/output.txt'
+file_path = './output.txt'
 with open(file_path, "r") as file:
     result_text = file.read()
 
